@@ -1,34 +1,30 @@
+import { useState, useEffect } from 'react'
 import { useTheme } from '../App.jsx'
+import { loadFromStorage, saveToStorage } from '../utils/storage.js'
 
-const startups = [
+const defaultStartups = [
   {
-    name: 'ArchConnect',
-    emoji: '🏗️',
-    tagline: 'Connecting Architects',
-    progress: 35,
+    id: 1, name: 'ArchConnect', emoji: '🏗️', tagline: 'Connecting Architects',
+    progress: 35, color: 'from-lavender to-blush',
     goals: ['Launch MVP', 'Create landing page', 'Find first users'],
-    color: 'from-lavender to-blush',
   },
   {
-    name: 'Weboraa',
-    emoji: '🌐',
-    tagline: 'Web Solutions Platform',
-    progress: 20,
+    id: 2, name: 'Weboraa', emoji: '🌐', tagline: 'Web Solutions Platform',
+    progress: 20, color: 'from-mint to-lavender',
     goals: ['Design brand identity', 'Build portfolio site', 'Get first client'],
-    color: 'from-mint to-lavender',
   },
   {
-    name: 'Eterna',
-    emoji: '💎',
-    tagline: 'Timeless Fashion',
-    progress: 45,
+    id: 3, name: 'Eterna', emoji: '💎', tagline: 'Timeless Fashion',
+    progress: 45, color: 'from-peach to-blush',
     goals: ['Complete catalog', 'Set up e-commerce', 'Social media launch'],
-    color: 'from-peach to-blush',
   },
 ]
 
 export default function StartupCard() {
   const { darkMode } = useTheme()
+  const [startups, setStartups] = useState(() => loadFromStorage('startup_overview', defaultStartups))
+
+  useEffect(() => { saveToStorage('startup_overview', startups) }, [startups])
 
   return (
     <div className={`rounded-3xl p-6 transition-all duration-300 card-hover ${
@@ -43,7 +39,7 @@ export default function StartupCard() {
       <div className="space-y-4">
         {startups.map((s) => (
           <div
-            key={s.name}
+            key={s.id}
             className={`p-4 rounded-2xl transition-all duration-300 ${
               darkMode ? 'bg-white/5 hover:bg-white/8' : 'bg-white/40 hover:bg-white/60'
             }`}
