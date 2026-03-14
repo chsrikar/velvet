@@ -47,8 +47,8 @@ export default function HabitCard() {
           onClick={() => setAdding(!adding)}
           className={`text-xs px-3 py-1 rounded-full border-none cursor-pointer transition-all duration-300 ${
             darkMode
-              ? 'bg-white/10 text-white/60 hover:bg-white/20'
-              : 'bg-white/50 text-dark1/60 hover:bg-white/80'
+              ? 'clay-btn-dark text-white/60'
+              : 'clay-btn text-dark1/60'
           }`}
         >
           {adding ? 'Cancel' : '+ Add'}
@@ -93,7 +93,7 @@ export default function HabitCard() {
             </span>
             <div className="flex items-center gap-2">
               <span className={`text-xs px-2 py-0.5 rounded-full ${
-                darkMode ? 'bg-white/10 text-white/40' : 'bg-white/50 text-dark1/40'
+                darkMode ? 'clay-btn-dark text-white/40' : 'clay-btn text-dark1/40'
               }`}>
                 🔥 {habit.streak}
               </span>

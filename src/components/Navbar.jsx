@@ -22,8 +22,8 @@ export default function Navbar({ toggleSidebar }) {
             onClick={toggleSidebar}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer border-none ${
               darkMode
-                ? 'bg-white/5 hover:bg-white/10 text-white'
-                : 'bg-blush/20 hover:bg-blush/30 text-dark1'
+                ? 'clay-btn-dark text-white'
+                : 'clay-btn text-dark1'
             }`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -62,8 +62,8 @@ export default function Navbar({ toggleSidebar }) {
               onClick={() => setShowFlowerMenu(!showFlowerMenu)}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer border-none text-xl ${
                 darkMode
-                  ? 'bg-white/5 hover:bg-white/10'
-                  : 'bg-lavender/20 hover:bg-lavender/30'
+                  ? 'clay-btn-dark'
+                  : 'clay-btn'
               } ${showFlowerMenu ? 'rotate-45 scale-110' : ''}`}
             >
               🌷

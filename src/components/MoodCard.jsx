@@ -4,9 +4,14 @@ import { loadFromStorage, saveToStorage } from '../utils/storage.js'
 
 const moods = [
   { emoji: '😊', label: 'Happy', color: 'bg-mint/30' },
+  { emoji: '🥰', label: 'Loved', color: 'bg-blush/30' },
   { emoji: '😌', label: 'Calm', color: 'bg-lavender/30' },
   { emoji: '🤩', label: 'Excited', color: 'bg-peach/30' },
-  { emoji: '😓', label: 'Stressed', color: 'bg-blush/30' },
+  { emoji: '😎', label: 'Confident', color: 'bg-cream/30' },
+  { emoji: '😓', label: 'Stressed', color: 'bg-blush/40' },
+  { emoji: '😰', label: 'Anxious', color: 'bg-lavender/40' },
+  { emoji: '😵‍💫', label: 'Overwhelmed', color: 'bg-peach/40' },
+  { emoji: '😢', label: 'Sad', color: 'bg-mint/40' },
   { emoji: '😴', label: 'Tired', color: 'bg-cream' },
 ]
 
@@ -18,6 +23,7 @@ export default function MoodCard() {
   const selectMood = (label) => {
     setSelected(label)
     saveToStorage(`mood_${todayKey}`, label)
+    window.dispatchEvent(new Event('moodUpdated'))
   }
 
   return (
@@ -38,8 +44,8 @@ export default function MoodCard() {
               selected === mood.label
                 ? `${mood.color} border-lavender/50 scale-110 shadow-lg`
                 : darkMode
-                  ? 'bg-white/5 border-transparent hover:bg-white/10'
-                  : 'bg-white/30 border-transparent hover:bg-white/50'
+                  ? 'clay-btn-dark border-transparent hover:scale-105'
+                  : 'clay-btn border-transparent hover:scale-105'
             }`}
           >
             <span className="text-2xl">{mood.emoji}</span>

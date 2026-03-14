@@ -4,7 +4,8 @@ import HabitCard from '../components/HabitCard.jsx'
 import MoodCard from '../components/MoodCard.jsx'
 import { loadFromStorage, saveToStorage } from '../utils/storage.js'
 
-const waterGlasses = 8
+const DEFAULT_WATER_GOAL = 8
+const DEFAULT_EXERCISE_GOAL = 60
 const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function formatDate(date) {
@@ -47,14 +48,29 @@ export default function Health() {
   const todayKey = getDateKey(today)
 
   const [water, setWater] = useState(() => loadFromStorage(`water_${todayKey}`, 0))
+  const [waterGoal, setWaterGoal] = useState(() => loadFromStorage('water_goal', DEFAULT_WATER_GOAL))
   const [sleepToday, setSleepToday] = useState(() => loadFromStorage(`sleep_${todayKey}`, 0))
   const [exerciseMins, setExerciseMins] = useState(() => loadFromStorage(`exercise_${todayKey}`, 0))
+  const [exerciseGoal, setExerciseGoal] = useState(() => loadFromStorage('exercise_goal', DEFAULT_EXERCISE_GOAL))
   const [history, setHistory] = useState(getLast7Days)
+  const [editingWaterGoal, setEditingWaterGoal] = useState(false)
+  const [editingExerciseGoal, setEditingExerciseGoal] = useState(false)
 
   useEffect(() => {
     saveToStorage(`water_${todayKey}`, water)
     setHistory(getLast7Days())
   }, [water, todayKey])
+
+  useEffect(() => { saveToStorage('water_goal', waterGoal) }, [waterGoal])
+  useEffect(() => { saveToStorage('exercise_goal', exerciseGoal) }, [exerciseGoal])
+
+  useEffect(() => {
+    const handleMoodUpdate = () => {
+      setHistory(getLast7Days())
+    }
+    window.addEventListener('moodUpdated', handleMoodUpdate)
+    return () => window.removeEventListener('moodUpdated', handleMoodUpdate)
+  }, [])
 
   useEffect(() => {
     saveToStorage(`sleep_${todayKey}`, sleepToday)
@@ -74,7 +90,18 @@ export default function Health() {
     setExerciseMins(prev => Math.max(0, prev + delta))
   }
 
-  const moodEmojis = { Happy: '😊', Calm: '😌', Excited: '🤩', Stressed: '😓', Tired: '😴' }
+  const adjustWaterGoal = (delta) => {
+    setWaterGoal(prev => Math.max(1, Math.min(20, prev + delta)))
+  }
+
+  const adjustExerciseGoal = (delta) => {
+    setExerciseGoal(prev => Math.max(5, Math.min(180, prev + delta)))
+  }
+
+  const moodEmojis = {
+    Happy: '😊', Loved: '🥰', Calm: '😌', Excited: '🤩', Confident: '😎',
+    Stressed: '😓', Anxious: '😰', Overwhelmed: '😵‍💫', Sad: '😢', Tired: '😴'
+  }
 
   return (
     <div className="page-enter">
@@ -98,7 +125,7 @@ export default function Health() {
         </h2>
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           <div className={`px-4 py-2 rounded-2xl ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
-            <p className="text-lg font-bold">💧 {water}/{waterGlasses}</p>
+            <p className="text-lg font-bold">💧 {water}/{waterGoal}</p>
             <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-dark1/30'}`}>Water</p>
           </div>
           <div className={`px-4 py-2 rounded-2xl ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
@@ -119,15 +146,46 @@ export default function Health() {
             ? 'bg-gradient-to-br from-mint/8 to-lavender/8 border border-white/5'
             : 'bg-gradient-to-br from-mint/20 to-lavender/15 border border-white/40'
         }`}>
-          <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">💧 Water Intake</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg font-semibold flex items-center gap-2">💧 Water Intake</h3>
+            <button
+              onClick={() => setEditingWaterGoal(!editingWaterGoal)}
+              className={`text-xs px-3 py-1 rounded-full border-none cursor-pointer transition-all duration-300 ${
+                darkMode
+                  ? 'bg-white/10 text-white/60 hover:bg-white/20'
+                  : 'bg-white/50 text-dark1/60 hover:bg-white/80'
+              }`}
+            >
+              {editingWaterGoal ? 'Done ✓' : `Goal: ${waterGoal} 🥤`}
+            </button>
+          </div>
+
+          {editingWaterGoal && (
+            <div className={`flex items-center gap-3 mb-4 p-3 rounded-2xl animate-fade-in ${
+              darkMode ? 'bg-white/5' : 'bg-white/30'
+            }`}>
+              <span className={`text-sm font-body ${darkMode ? 'text-white/50' : 'text-dark1/50'}`}>Daily goal:</span>
+              <button onClick={() => adjustWaterGoal(-1)}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm border-none cursor-pointer ${
+                  darkMode ? 'bg-white/10 text-white/60 hover:bg-white/20' : 'bg-blush/20 text-dark1/60 hover:bg-blush/30'
+                }`}>−</button>
+              <span className="text-lg font-bold font-display">{waterGoal}</span>
+              <button onClick={() => adjustWaterGoal(1)}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm border-none cursor-pointer ${
+                  darkMode ? 'bg-white/10 text-white/60 hover:bg-white/20' : 'bg-blush/20 text-dark1/60 hover:bg-blush/30'
+                }`}>+</button>
+              <span className={`text-sm font-body ${darkMode ? 'text-white/40' : 'text-dark1/40'}`}>glasses</span>
+            </div>
+          )}
+
           <p className={`text-sm font-body mb-3 ${darkMode ? 'text-white/40' : 'text-dark1/40'}`}>
-            {water}/{waterGlasses} glasses today
+            {water}/{waterGoal} glasses today {water >= waterGoal ? '🎉' : ''}
           </p>
           <div className="flex gap-2 flex-wrap mb-4">
-            {Array.from({ length: waterGlasses }).map((_, i) => (
+            {Array.from({ length: waterGoal }).map((_, i) => (
               <button
                 key={i}
-                onClick={() => setWater(i + 1)}
+                onClick={() => setWater(water === i + 1 ? i : i + 1)}
                 className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg cursor-pointer border-none transition-all duration-300 ${
                   i < water
                     ? 'bg-gradient-to-br from-mint to-lavender text-white scale-105 shadow-md'
@@ -140,7 +198,7 @@ export default function Health() {
           </div>
           <div className={`w-full h-3 rounded-full overflow-hidden ${darkMode ? 'bg-white/10' : 'bg-white/40'}`}>
             <div className="h-full rounded-full bg-gradient-to-r from-mint to-lavender transition-all duration-500"
-              style={{ width: `${(water / waterGlasses) * 100}%` }} />
+              style={{ width: `${Math.min(100, (water / waterGoal) * 100)}%` }} />
           </div>
         </div>
 
@@ -192,22 +250,53 @@ export default function Health() {
             ? 'bg-gradient-to-br from-peach/8 to-blush/8 border border-white/5'
             : 'bg-gradient-to-br from-peach/20 to-blush/15 border border-white/40'
         }`}>
-          <h3 className="font-display text-lg font-semibold mb-3 flex items-center gap-2">🏃 Exercise</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display text-lg font-semibold flex items-center gap-2">🏃 Exercise</h3>
+            <button
+              onClick={() => setEditingExerciseGoal(!editingExerciseGoal)}
+              className={`text-[10px] px-2 py-0.5 rounded-full border-none cursor-pointer transition-all ${
+                darkMode
+                  ? 'bg-white/10 text-white/60 hover:bg-white/20'
+                  : 'bg-white/50 text-dark1/60 hover:bg-white/80'
+              }`}
+            >
+              {editingExerciseGoal ? 'Done ✓' : `Goal: ${exerciseGoal}m`}
+            </button>
+          </div>
+
+          {editingExerciseGoal && (
+            <div className={`flex items-center justify-center gap-2 mb-3 p-2 rounded-2xl animate-fade-in ${
+              darkMode ? 'bg-white/5' : 'bg-white/30'
+            }`}>
+              <button onClick={() => adjustExerciseGoal(-5)}
+                className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer ${
+                  darkMode ? 'bg-white/10 text-white/60' : 'bg-blush/20 text-dark1/60'
+                }`}>−</button>
+              <span className="text-sm font-bold">{exerciseGoal}m</span>
+              <button onClick={() => adjustExerciseGoal(5)}
+                className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer ${
+                  darkMode ? 'bg-white/10 text-white/60' : 'bg-blush/20 text-dark1/60'
+                }`}>+</button>
+            </div>
+          )}
+
           <div className="text-center mb-3">
             <p className="text-4xl font-display font-bold bg-gradient-to-r from-peach to-blush bg-clip-text text-transparent">{exerciseMins}</p>
             <p className={`text-xs font-body ${darkMode ? 'text-white/40' : 'text-dark1/40'}`}>minutes today</p>
           </div>
           <div className={`w-full h-3 rounded-full overflow-hidden mb-3 ${darkMode ? 'bg-white/10' : 'bg-white/40'}`}>
             <div className="h-full rounded-full bg-gradient-to-r from-peach to-blush transition-all duration-500"
-              style={{ width: `${Math.min(100, (exerciseMins / 60) * 100)}%` }} />
+              style={{ width: `${Math.min(100, (exerciseMins / exerciseGoal) * 100)}%` }} />
           </div>
-          <p className={`text-xs text-center font-body mb-3 ${darkMode ? 'text-white/30' : 'text-dark1/30'}`}>Goal: 60 minutes</p>
-          <div className="flex justify-center gap-2">
-            {[5, 10, 15, 30].map(mins => (
+          <p className={`text-xs text-center font-body mb-3 ${darkMode ? 'text-white/30' : 'text-dark1/30'}`}>
+            Goal: {exerciseGoal} minutes {exerciseMins >= exerciseGoal ? '🎉' : ''}
+          </p>
+          <div className="flex justify-center gap-2 flex-wrap">
+            {[-10, -5, 5, 10, 15, 30].map(mins => (
               <button key={mins} onClick={() => adjustExercise(mins)}
                 className={`px-3 py-1.5 rounded-xl text-xs border-none cursor-pointer transition-all ${
                   darkMode ? 'bg-white/10 text-white/60 hover:bg-white/20' : 'bg-white/50 text-dark1/60 hover:bg-white/70'
-                }`}>+{mins}m</button>
+                }`}>{mins > 0 ? '+' : ''}{mins}m</button>
             ))}
           </div>
         </div>
@@ -258,7 +347,7 @@ export default function Health() {
                 <div className="space-y-1.5 mt-1">
                   <div>
                     <span className="text-sm">💧</span>
-                    <p className={`text-xs font-bold ${day.water >= 8 ? 'text-green-500' : ''}`}>{day.water}/{waterGlasses}</p>
+                    <p className={`text-xs font-bold ${day.water >= waterGoal ? 'text-green-500' : ''}`}>{day.water}/{waterGoal}</p>
                   </div>
                   <div>
                     <span className="text-sm">😴</span>

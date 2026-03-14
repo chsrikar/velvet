@@ -135,3 +135,55 @@ body {
 .page-enter {
   animation: fadeInUp 0.5s ease-out forwards;
 }
+
+/* --- Claymorphism Utilities --- */
+.clay-card {
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    inset 4px 4px 8px rgba(255, 255, 255, 0.7),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.04),
+    6px 6px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+.clay-card-dark {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    inset 4px 4px 8px rgba(255, 255, 255, 0.05),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.2),
+    6px 6px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+.clay-btn {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.05),
+    4px 4px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+.clay-btn:hover {
+  box-shadow: 
+    inset 3px 3px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.05),
+    6px 6px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.clay-btn-dark {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.15),
+    4px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+}
+.clay-btn-dark:hover {
+  box-shadow: 
+    inset 3px 3px 5px rgba(255, 255, 255, 0.08),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.15),
+    6px 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}

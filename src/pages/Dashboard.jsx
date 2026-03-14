@@ -13,17 +13,39 @@ const defaultGoals = [
   { id: 3, text: 'Build strong habits' },
 ]
 
-const visionImages = [
-  { id: 1, url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop', caption: 'Team Collaboration' },
-  { id: 2, url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop', caption: 'Tech Innovation' },
-  { id: 3, url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop', caption: 'Dream Big' },
-  { id: 4, url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop', caption: 'Future Office' },
-]
 
 export default function Dashboard() {
   const { darkMode } = useTheme()
+  const todayKey = new Date().toISOString().slice(0, 10)
   const [goals, setGoals] = useState(() => loadFromStorage('goals', defaultGoals))
   const [newGoal, setNewGoal] = useState('')
+  const [currentMood, setCurrentMood] = useState(() => loadFromStorage(`mood_${todayKey}`, null))
+
+  useEffect(() => { saveToStorage('goals', goals) }, [goals])
+
+  useEffect(() => {
+    const handleMoodUpdate = () => {
+      setCurrentMood(loadFromStorage(`mood_${todayKey}`, null))
+    }
+    window.addEventListener('moodUpdated', handleMoodUpdate)
+    return () => window.removeEventListener('moodUpdated', handleMoodUpdate)
+  }, [todayKey])
+
+  const getGreetingMessage = () => {
+    if (!currentMood) return 'Your personal space to plan, dream, and grow. 🌸'
+    switch (currentMood) {
+      case 'Happy': case 'Excited': case 'Confident': case 'Loved': return 'Keep shining bright today! ✨'
+      case 'Calm': return 'Enjoy the peace and balance today. 🌿'
+      case 'Stressed': case 'Anxious': case 'Overwhelmed': return 'Take a deep breath. You got this. 💖'
+      case 'Sad': case 'Tired': return 'Be gentle with yourself today. Rest if you need to. 🌙'
+      default: return 'Your personal space to plan, dream, and grow. 🌸'
+    }
+  }
+
+  const moodEmojis = {
+    Happy: '😊', Loved: '🥰', Calm: '😌', Excited: '🤩', Confident: '😎',
+    Stressed: '😓', Anxious: '😰', Overwhelmed: '😵‍💫', Sad: '😢', Tired: '😴'
+  }
 
   useEffect(() => { saveToStorage('goals', goals) }, [goals])
 
@@ -59,7 +81,7 @@ export default function Dashboard() {
         <p className={`font-body text-sm md:text-base animate-fade-in-up stagger-2 ${
           darkMode ? 'text-white/50' : 'text-dark1/50'
         }`}>
-          Your personal space to plan, dream, and grow. 🌸
+          {getGreetingMessage()}
         </p>
 
         {/* Quick stats */}
@@ -68,12 +90,12 @@ export default function Dashboard() {
             { label: 'Tasks Today', value: '4', icon: '📋' },
             { label: 'CGPA', value: '8.2', icon: '📊' },
             { label: 'Streak', value: '12 days', icon: '🔥' },
-            { label: 'Mood', value: 'Happy', icon: '😊' },
+            { label: 'Mood', value: currentMood || 'None', icon: currentMood ? moodEmojis[currentMood] : '🌈' },
           ].map((stat) => (
             <div
               key={stat.label}
               className={`px-4 py-2.5 rounded-2xl flex items-center gap-2 ${
-                darkMode ? 'bg-white/5 border border-white/5' : 'bg-white/40 border border-white/40'
+                darkMode ? 'clay-card-dark' : 'clay-card'
               }`}
             >
               <span>{stat.icon}</span>
@@ -181,23 +203,16 @@ export default function Dashboard() {
             View All →
           </a>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {visionImages.map((img) => (
-            <div
-              key={img.id}
-              className="relative rounded-2xl overflow-hidden group cursor-pointer aspect-[4/3]"
-            >
-              <img
-                src={img.url}
-                alt={img.caption}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                <p className="text-white text-xs font-body">{img.caption}</p>
-              </div>
-            </div>
-          ))}
+        <div className={`p-8 rounded-2xl flex flex-col items-center text-center ${
+          darkMode ? 'clay-card-dark' : 'clay-card'
+        }`}>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-mint/30 to-lavender/30 flex items-center justify-center text-3xl mb-4 animate-float">
+            ✨
+          </div>
+          <h4 className="font-display font-semibold text-lg mb-2">Coming Soon</h4>
+          <p className={`text-sm font-body max-w-sm ${darkMode ? 'text-white/50' : 'text-dark1/50'}`}>
+            Your personal Pinterest-style inspiration board is being carefully crafted. 💖
+          </p>
         </div>
       </div>
     </div>

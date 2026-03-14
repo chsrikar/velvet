@@ -17,8 +17,8 @@ export default function FlowerMenu({ onClose }) {
       <div className="fixed inset-0 z-50" onClick={onClose} />
       <div className={`absolute right-0 top-14 w-64 rounded-3xl p-2 z-50 animate-scale-in ${
         darkMode
-          ? 'glass-dark'
-          : 'glass'
+          ? 'clay-card-dark'
+          : 'clay-card'
       }`}>
         <div className="p-3 pb-2">
           <p className="text-xs font-body opacity-50 uppercase tracking-widest">Menu</p>
@@ -28,8 +28,8 @@ export default function FlowerMenu({ onClose }) {
             key={item.label}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-all duration-200 cursor-pointer border-none bg-transparent ${
               darkMode
-                ? 'hover:bg-white/5 text-white/80'
-                : 'hover:bg-blush/10 text-dark1/80'
+                ? 'hover:clay-btn-dark hover:text-white text-white/80'
+                : 'hover:clay-btn hover:text-dark1 text-dark1/80'
             }`}
             style={{ animationDelay: `${i * 0.05}s` }}
             onClick={onClose}
